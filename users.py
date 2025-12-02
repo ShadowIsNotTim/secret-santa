@@ -38,12 +38,15 @@ def save_user(user_id, user):
 
 def set_wishlist(user_id, new_wishlist):
     try:
-        users = load_users()
-        users[str(user_id)]["wishlist"] = new_wishlist
-        with open(DATA_FILE, 'w', encoding='utf-8') as f:
-            json.dump(users, f, ensure_ascii=False, indent=4)
-        logger.info(f"Пользователь {user_id} сохранен")
-        return True
+        if new_wishlist:
+            users = load_users()
+            users[str(user_id)]["wishlist"] = new_wishlist
+            with open(DATA_FILE, 'w', encoding='utf-8') as f:
+                json.dump(users, f, ensure_ascii=False, indent=4)
+            logger.info(f"Пользователь {user_id} сохранен")
+            return True
+        else:
+            return False
     except Exception as e:
         logger.error(f"Ошибка редактирования: {e}")
         return False

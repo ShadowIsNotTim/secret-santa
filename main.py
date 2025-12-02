@@ -75,12 +75,8 @@ async def unregister(message: types.Message):
 
 @dp.message(Command("start"))
 async def start(message: types.Message):
-    await message.answer("hi")
-
-
-@dp.message(Command("help"))
-async def help(message: types.Message):
-    await message.answer("dfdfd")
+    await message.answer(
+        "Привет, я бот группы БПИ256, провожу тайного санту\nСейчас регистрируемся /register, через некоторое время проведётся шаффл участников")
 
 
 @dp.message(Command("new_year"))
@@ -91,7 +87,7 @@ async def new_year(message: types.Message):
         random.shuffle(ids)
         for i in range(len(ids)):
             target = ids[(i + 1) % len(ids)]
-            users.set_target(int(ids[i]), int(target), dd[target]["tag"])
+            users.set_target(int(ids[i]), int(target))
             await bot.send_message(int(ids[i]), f"ты даришь @{dd[target]['tag']}")
     else:
         await message.answer("У вас нет доступа")
@@ -138,23 +134,17 @@ async def cmd_cancel(message: types.Message, state: FSMContext):
     if current_state is None:
         await message.answer("Нет активных процессов для отмены")
         return
-
     await state.clear()
-    await message.answer("Изменение вишлиста отменена")
+    await message.answer("Изменение вишлиста отменено")
 
 
 @dp.message(RegistrationStates.waiting_for_wishlist)
 async def my_wishlist_state(message: types.Message, state: FSMContext):
     if users.set_wishlist(message.from_user.id, message.text):
         await message.answer("Ваш вишлист успешно изменен")
+        await state.clear()
     else:
-        pass
-    await state.clear()
-
-
-@dp.message()
-async def echo(message: types.Message):
-    await message.answer(message.text)
+        await message.answer("Ошибка сохранения вишлиста, попробуйте отправить заново")
 
 
 async def main():
