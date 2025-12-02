@@ -8,6 +8,7 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.filters.command import Command
+from aiogram.types import InputFile, FSInputFile
 
 from tokens import *
 import users
@@ -29,6 +30,7 @@ logger = logging.getLogger(__name__)
 
 class RegistrationStates(StatesGroup):
     waiting_for_wishlist = State()
+    waiting_for_info = State()
 
 
 async def read_logs():
@@ -44,9 +46,17 @@ async def send_logs(message: types.Message):
     if message.from_user.id != OWNER_ID:
         await message.answer("У вас нет доступа")
         return
+    await bot.send_document(message.chat.id, FSInputFile("bot.log"))
 
-    logs_text = await read_logs()
-    await message.answer(f"<pre>{logs_text}</pre>", parse_mode="HTML")
+
+@dp.message(Command("info"))
+async def set_info(message: types.Message, state: FSMContext):
+    if message.from_user.id != OWNER_ID:
+        await message.answer("У вас нет доступа")
+        return
+
+    await message.answer("Жду сообщение для отправки")
+    await state.set_state(RegistrationStates.waiting_for_info)
 
 
 @dp.message(Command("register"))
@@ -88,7 +98,8 @@ async def new_year(message: types.Message):
         for i in range(len(ids)):
             target = ids[(i + 1) % len(ids)]
             users.set_target(int(ids[i]), int(target))
-            await bot.send_message(int(ids[i]), f"Привет, ты даришь @{dd[target]['tag']}")
+            await bot.send_message(int(ids[i]),
+                                   f"Привет, ты даришь @{dd[target]['tag']}\nПосмотреть его(её) вишлист можно через /check_wishlist")
     else:
         await message.answer("У вас нет доступа")
 
@@ -135,7 +146,7 @@ async def cmd_cancel(message: types.Message, state: FSMContext):
         await message.answer("Нет активных процессов для отмены")
         return
     await state.clear()
-    await message.answer("Изменение вишлиста отменено")
+    await message.answer("Изменение отменено")
 
 
 @dp.message(RegistrationStates.waiting_for_wishlist)
@@ -145,6 +156,17 @@ async def my_wishlist_state(message: types.Message, state: FSMContext):
     else:
         await message.answer("Ошибка сохранения вишлиста, попробуйте заново /my_wishlist")
     await state.clear()
+
+
+@dp.message(RegistrationStates.waiting_for_info)
+async def send_info(message: types.Message, state: FSMContext):
+    try:
+        for user in users.load_users().keys():
+            await bot.send_message(int(user), message.text)
+        await message.answer("Успешная рассылка")
+    except Exception as e:
+        logging.error(e)
+        await message.answer("Что-то пошло не так /logs")
 
 
 async def main():
