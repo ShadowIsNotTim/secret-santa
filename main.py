@@ -58,7 +58,7 @@ async def register(message: types.Message):
     if users.save_user(message.from_user.id, message.from_user.username):
         await message.answer("Успешная регистрация")
     else:
-        pass
+        await message.answer("Ошибка регистрации")
 
 
 @dp.message(Command("unregister"))
@@ -70,7 +70,7 @@ async def unregister(message: types.Message):
     if users.delete_user(message.from_user.id):
         await message.answer("Вы отчислены.")
     else:
-        pass
+        await message.answer("Ошибка удаления")
 
 
 @dp.message(Command("start"))
@@ -88,7 +88,7 @@ async def new_year(message: types.Message):
         for i in range(len(ids)):
             target = ids[(i + 1) % len(ids)]
             users.set_target(int(ids[i]), int(target))
-            await bot.send_message(int(ids[i]), f"ты даришь @{dd[target]['tag']}")
+            await bot.send_message(int(ids[i]), f"Привет, ты даришь @{dd[target]['tag']}")
     else:
         await message.answer("У вас нет доступа")
 
@@ -125,7 +125,7 @@ async def check_wishlist(message: types.Message):
     if not user:
         await message.answer("Вы еще не зарегистрировались /register")
         return
-    await message.answer(users.check_wishlist(user["user_id"]))
+    await message.answer(f"Вишлист:\n{users.check_wishlist(user["user_id"])}")
 
 
 @dp.message(Command("cancel"))
@@ -142,9 +142,9 @@ async def cmd_cancel(message: types.Message, state: FSMContext):
 async def my_wishlist_state(message: types.Message, state: FSMContext):
     if users.set_wishlist(message.from_user.id, message.text):
         await message.answer("Ваш вишлист успешно изменен")
-        await state.clear()
     else:
-        await message.answer("Ошибка сохранения вишлиста, попробуйте отправить заново")
+        await message.answer("Ошибка сохранения вишлиста, попробуйте заново /my_wishlist")
+    await state.clear()
 
 
 async def main():
