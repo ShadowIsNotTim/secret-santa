@@ -134,11 +134,6 @@ async def new_year(message: types.Message):
         for i in range(len(ids)):
             target = ids[(i + 1) % len(ids)]
             users.set_target(int(ids[i]), int(target))
-            if int(ids[i]) == int(target):
-                await message.answer("FATAL ERROR ON SHUFFLING!!!! FATAL ERROR!!!! 🫣🫣🫣")
-                return
-        for i in range(len(ids)):
-            target = ids[(i + 1) % len(ids)]
             await bot.send_message(int(ids[i]),
                                    f"О боже?!? ты даришь @{dd[target]['tag']} 🤭\nПосмотреть его(её) вишлист можно через /check_wishlist")
     else:
