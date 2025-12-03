@@ -1,0 +1,5 @@
+venv
+tokens.py
+bot.log
+users.json
+__pycache__
