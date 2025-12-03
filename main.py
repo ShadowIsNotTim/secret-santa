@@ -11,6 +11,7 @@ from aiogram.filters.command import Command
 from aiogram.types import InputFile, FSInputFile
 
 from tokens import *
+from the_list import THE_LIST
 import users
 
 # Загружаем help-текст из файла при старте
@@ -172,6 +173,18 @@ async def get_my_wishlist(message: types.Message, state: FSMContext):
         await message.answer("Вы еще не зарегистрировались 😰 /register")
         return
     await message.answer(f"Вот ваш виш лист: {user["wishlist"]}")
+
+@dp.message(Command("cookie"))
+async def abralkjsdfkljs(message: types.Message, state: FSMContext):
+    await message.answer(f"{random.choice(THE_LIST)}")
+
+@dp.message(Command("wishes_cookie"))
+async def abralkjsdfkljs2(message: types.Message, state: FSMContext):
+    await message.answer(f"{random.choice(THE_LIST)}")
+
+@dp.message(Command("funny_wishes"))
+async def abralkjsdfkljs3(message: types.Message, state: FSMContext):
+    await message.answer(f"{random.choice(THE_LIST)}")
 
 
 @dp.message(Command("check_wishlist"))
