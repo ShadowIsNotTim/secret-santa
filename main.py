@@ -119,6 +119,12 @@ async def start(message: types.Message):
     await message.answer(START_TEXT, parse_mode="Markdown")
 
 
+@dp.message(Command("cnt"))
+async def start(message: types.Message):
+    u = users.load_users()
+    await message.answer(f"Уже {len(u)} человек готовы к новогоднему ивенту!!!")
+
+
 @dp.message(Command("new_year"))
 async def new_year(message: types.Message):
     if message.from_user.id == OWNER_ID:
